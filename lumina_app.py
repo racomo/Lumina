@@ -27,7 +27,6 @@ if st.button("Start Session"):
 
 # Simulated Wearables Detection
 def detect_wearables():
-    # Simulated detection logic
     detected_wearables = ["Headphones", "Heart Rate Monitor"]
     return detected_wearables
 
@@ -40,29 +39,13 @@ if st.button("Detect Wearables"):
 
 # Real-Time Feedback
 st.header("Real-Time Feedback")
-st.write("Simulate tone and pace analysis.")
-
-# Tone selection and feedback
 tone = st.selectbox("Choose a simulated tone:", ["Neutral", "Fast", "Empathetic", "Hesitant"])
-feedback_db = {
-    "Fast": "You’re speaking too quickly. Try pausing between points.",
-    "Empathetic": "Great job connecting with your audience! Keep it up.",
-    "Hesitant": "You seem unsure. Focus on building confidence.",
-    "Neutral": "Your tone is steady. Maintain this consistency.",
-}
-
-st.write(f"**Feedback:** {feedback_db.get(tone, 'Keep going, you’re doing well!')}")
-
-# Simulated voice input
 if st.button("Start Real-Time Feedback"):
-    st.write("🎙️ Listening to your voice...")
-    # Simulate tone and stress detection
     simulated_tone = random.choice(["Neutral", "Fast", "Empathetic", "Hesitant"])
     simulated_stress = random.randint(0, 100)
     st.write(f"Detected Tone: {simulated_tone}")
     st.write(f"Stress Level: {simulated_stress}")
-    feedback = simulate_feedback(simulated_tone, simulated_stress)
-    st.write(f"✨ Coaching Advice: {feedback}")
+    st.write(f"✨ Coaching Advice: {simulate_feedback(simulated_tone, simulated_stress)}")
 
 # Well-Being Monitoring
 st.header("Well-Being Monitoring")
@@ -75,21 +58,16 @@ elif stress_level > 40:
 else:
     st.success("🟢 Low stress: You're doing great!")
 
-# Simulated coaching feedback
-feedback = simulate_feedback(tone, stress_level)
-st.write(f"✨ Coaching Advice: {feedback}")
-
-# Add a random motivational tip
+# Motivational Tip
 tips = [
     "Remember to pause after key points.",
     "Maintain eye contact with your audience.",
     "Use gestures to emphasize your message.",
     "Keep your tone warm and inviting."
 ]
-random_tip = random.choice(tips)
-st.write(f"💡 Tip of the Day: {random_tip}")
+st.write(f"💡 Tip of the Day: {random.choice(tips)}")
 
-# Location-Based Feedback (Mocked)
+# Location-Based Feedback
 st.header("Location-Based Feedback")
 if st.button("Detect Location"):
     st.write("🏠 Detected Location: New York, NY (Mock Data)")
