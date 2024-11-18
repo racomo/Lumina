@@ -1,0 +1,6 @@
+#!/bin/bash
+source ~/lumina_venv/bin/activate
+streamlit run lumina_app.py
+deactivate
+nano ~/.zshrc
+
