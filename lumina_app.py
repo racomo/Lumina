@@ -1,77 +1,110 @@
-import streamlit as st
+from kivy.app import App
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.label import Label
+from kivy.uix.button import Button
+from kivy.uix.slider import Slider
+from kivy.uix.webview import WebView
+from kivy.clock import Clock
 import random
 
-# Title and introduction
-st.title("Lumina MVP")
-st.write("Welcome to Lumina! Your heart-centered leadership assistant.")
 
-# Define feedback logic
-def simulate_feedback(tone, stress_level):
-    if tone == "Fast" and stress_level > 70:
-        return "Your pace and stress levels are high. Try slowing down and taking a breath."
-    elif tone == "Empathetic":
-        return "Great job connecting emotionally! Balance emotions with clear points."
-    elif tone == "Hesitant":
-        return "Confidence is key. Practice pauses to deliver your message with clarity."
-    elif tone == "Neutral" and stress_level <= 40:
-        return "You’re calm and steady. Keep up the great work!"
-    else:
-        return "Keep refining your communication style to achieve better engagement."
+class LuminaApp(App):
+    def build(self):
+        # Main layout
+        self.layout = BoxLayout(orientation='vertical', spacing=10, padding=10)
 
-# Welcome Flow
-st.header("Welcome to Lumina!")
-st.write("Put on your headphones and let's get started.")
-if st.button("Start Session"):
-    st.write("🎧 Detecting your wearables...")
-    st.success("Wearables connected successfully! Let's begin.")
+        # Welcome message
+        self.layout.add_widget(Label(
+            text="Welcome to Lumina! Your heart-centered leadership assistant.",
+            font_size='18sp',
+            halign='center'
+        ))
 
-# Simulated Wearables Detection
-def detect_wearables():
-    detected_wearables = ["Headphones", "Heart Rate Monitor"]
-    return detected_wearables
+        # Wearables Detection Button
+        self.detect_wearables_button = Button(text="Detect Wearables")
+        self.detect_wearables_button.bind(on_press=self.detect_wearables)
+        self.layout.add_widget(self.detect_wearables_button)
 
-if st.button("Detect Wearables"):
-    wearables = detect_wearables()
-    if wearables:
-        st.success(f"Detected: {', '.join(wearables)}")
-    else:
-        st.error("No wearables detected. Please try again.")
+        # Real-Time Feedback
+        self.layout.add_widget(Label(
+            text="Simulated Tone and Pace Feedback",
+            font_size='16sp',
+            halign='center'
+        ))
+        self.feedback_label = Label(text="", halign='center')
+        self.layout.add_widget(self.feedback_label)
+        self.tone_button = Button(text="Simulate Tone Feedback")
+        self.tone_button.bind(on_press=self.simulate_tone_feedback)
+        self.layout.add_widget(self.tone_button)
 
-# Real-Time Feedback
-st.header("Real-Time Feedback")
-tone = st.selectbox("Choose a simulated tone:", ["Neutral", "Fast", "Empathetic", "Hesitant"])
-if st.button("Start Real-Time Feedback"):
-    simulated_tone = random.choice(["Neutral", "Fast", "Empathetic", "Hesitant"])
-    simulated_stress = random.randint(0, 100)
-    st.write(f"Detected Tone: {simulated_tone}")
-    st.write(f"Stress Level: {simulated_stress}")
-    st.write(f"✨ Coaching Advice: {simulate_feedback(simulated_tone, simulated_stress)}")
+        # Stress Level Slider
+        self.layout.add_widget(Label(
+            text="Adjust Stress Level",
+            font_size='16sp',
+            halign='center'
+        ))
+        self.stress_slider = Slider(min=0, max=100, value=50)
+        self.stress_slider.bind(value=self.update_stress_level)
+        self.layout.add_widget(self.stress_slider)
+        self.stress_label = Label(text="Stress Level: 50", halign='center')
+        self.layout.add_widget(self.stress_label)
 
-# Well-Being Monitoring
-st.header("Well-Being Monitoring")
-stress_level = st.slider("Stress Level (simulated):", 0, 100, random.randint(30, 70))
-if stress_level > 70:
-    st.error("🚨 High stress detected: Take a deep breath.")
-    st.audio("audio/take_a_breath.mp3")
-elif stress_level > 40:
-    st.warning("🟡 Moderate stress: Consider a short break.")
-else:
-    st.success("🟢 Low stress: You're doing great!")
+        # Google Maps WebView
+        self.layout.add_widget(Label(
+            text="Location-Based Feedback (Google Maps)",
+            font_size='16sp',
+            halign='center'
+        ))
+        self.webview = WebView(
+            url="https://www.google.com/maps/embed/v1/place?key=AIzaSyAuity_NJAVniRBBGjy5CUWcIc6wEfbCEg&q=New+York"
+        )
+        self.layout.add_widget(self.webview)
 
-# Motivational Tip
-tips = [
-    "Remember to pause after key points.",
-    "Maintain eye contact with your audience.",
-    "Use gestures to emphasize your message.",
-    "Keep your tone warm and inviting."
-]
-st.write(f"💡 Tip of the Day: {random.choice(tips)}")
+        # Tip of the Day
+        self.tip_label = Label(
+            text="💡 Tip of the Day: Stay calm and confident during your sessions.",
+            font_size='14sp',
+            halign='center'
+        )
+        self.layout.add_widget(self.tip_label)
+        Clock.schedule_interval(self.update_tip_of_the_day, 10)
 
-# Location-Based Feedback
-st.header("Location-Based Feedback")
-if st.button("Detect Location"):
-    st.write("🏠 Detected Location: New York, NY (Mock Data)")
+        return self.layout
 
-# Footer
-st.write("---")
-st.write("© 2024 Lumina - Empowering Heart Leadership")
+    def detect_wearables(self, instance):
+        detected_wearables = ["Headphones", "Heart Rate Monitor"]  # Simulated detection
+        self.feedback_label.text = f"Detected: {', '.join(detected_wearables)}"
+
+    def simulate_tone_feedback(self, instance):
+        tones = ["Neutral", "Fast", "Empathetic", "Hesitant"]
+        tone = random.choice(tones)
+        feedback = {
+            "Fast": "You’re speaking too quickly. Try pausing between points.",
+            "Empathetic": "Great job connecting with your audience! Keep it up.",
+            "Hesitant": "You seem unsure. Focus on building confidence.",
+            "Neutral": "Your tone is steady. Maintain this consistency.",
+        }.get(tone, "Keep going, you’re doing well!")
+        self.feedback_label.text = f"Tone: {tone}\nFeedback: {feedback}"
+
+    def update_stress_level(self, instance, value):
+        self.stress_label.text = f"Stress Level: {int(value)}"
+        if value > 70:
+            self.feedback_label.text = "🚨 High stress detected: Take a deep breath."
+        elif value > 40:
+            self.feedback_label.text = "🟡 Moderate stress: Consider a short break."
+        else:
+            self.feedback_label.text = "🟢 Low stress: You’re doing great!"
+
+    def update_tip_of_the_day(self, dt):
+        tips = [
+            "💡 Remember to pause after key points.",
+            "💡 Maintain eye contact with your audience.",
+            "💡 Use gestures to emphasize your message.",
+            "💡 Keep your tone warm and inviting.",
+            "💡 Focus on clarity and confidence."
+        ]
+        self.tip_label.text = random.choice(tips)
+
+
+if __name__ == '__main__':
+    LuminaApp().run()
